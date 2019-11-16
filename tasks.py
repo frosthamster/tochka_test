@@ -1,10 +1,10 @@
 from invoke import task
 
-from app import create_app
+from app import app_context
 from app.fixtures import run_fixture
 
 APP = 'app'
-BLACK_BASE_CMD = 'black --py36 --skip-string-normalization --skip-numeric-underscore-normalization --line-length=120'
+BLACK_BASE_CMD = 'black --py36 --skip-string-normalization --skip-numeric-underscore-normalization --line-length=100'
 
 
 @task
@@ -24,5 +24,5 @@ def pretty(ctx):
 @task
 def load_fixture(ctx, fixture_name):
     """Load fixture to db"""
-    with create_app().test_request_context():
+    with app_context():
         run_fixture(fixture_name)

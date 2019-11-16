@@ -1,17 +1,16 @@
 from dotenv import load_dotenv
-from flask_uuid import FlaskUUID
 
 load_dotenv()
 
+from contextlib import ExitStack, contextmanager
 
 from flask import Flask
+from flask_uuid import FlaskUUID
 from flask_migrate import Migrate
 
-import app.utils.logging_config
-from .config import Config
+from .configs.config import Config
+from .configs.sqla_config import get_db
 from .utils.exceptions import handle_exc
-from .utils.sqla_config import get_db
-
 
 db = get_db()
 migrate = Migrate()
@@ -33,3 +32,13 @@ def create_app(app_config=Config):
     app.register_error_handler(Exception, handle_exc)
 
     return app
+
+
+@contextmanager
+def app_context(use_db=True, *args, **kwargs):
+    app = create_app()
+    with ExitStack() as stack:
+        stack.enter_context(app.test_request_context())
+        if use_db:
+            stack.enter_context(db.session_scope(remove=True, *args, **kwargs))
+        yield

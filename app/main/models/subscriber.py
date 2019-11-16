@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from app import db
 
@@ -13,7 +14,9 @@ class Subscriber(db.Model):
         db.CheckConstraint('hold <= balance', name='hold_lte_balance'),
     )
 
-    id = db.Column(UUID(as_uuid=True), server_default=db.text('uuid_generate_v4()'), primary_key=True)
+    id = db.Column(
+        UUID(as_uuid=True), server_default=db.text('uuid_generate_v4()'), primary_key=True
+    )
     full_name = db.Column(db.String(255), nullable=False)
     balance = db.Column(db.Numeric(precision=64, scale=2), nullable=False)
     hold = db.Column(db.Numeric(precision=64, scale=2), nullable=False)
@@ -21,3 +24,7 @@ class Subscriber(db.Model):
 
     def __repr__(self):
         return self._repr(full_name=self.full_name, is_closed=self.is_closed)
+
+    @hybrid_property
+    def current_balance(self):
+        return self.balance - self.hold

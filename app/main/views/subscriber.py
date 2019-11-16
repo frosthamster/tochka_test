@@ -16,7 +16,11 @@ def get_subscriber_and_op_amount(lock=True):
     if lock:
         query = query.with_for_update()
 
-    return query.first_or_404('not found subscriber'), args['amount']
+    subscriber = query.first_or_404('subscriber not found')
+    if subscriber.is_closed:
+        raise ValidationError('subscriber account is closed')
+
+    return subscriber, args['amount']
 
 
 class AddView(base_view.View):

@@ -5,4 +5,4 @@ __all__ = ['PingView']
 
 class PingView(base_view.View):
     def get(self):
-        return None
+        return "it's alive!"

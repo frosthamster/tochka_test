@@ -1,9 +1,9 @@
 from contextlib import contextmanager
 
 import flask_sqlalchemy
+import sqlalchemy.util
 from flask_sqlalchemy.model import BindMetaMixin
 from sqlalchemy import MetaData, inspect
-import sqlalchemy.util
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
 
