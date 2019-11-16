@@ -13,7 +13,7 @@ class NoNameMeta(BindMetaMixin, DeclarativeMeta):
 
 class SQLAlchemy(flask_sqlalchemy.SQLAlchemy):
     @contextmanager
-    def session_scope(self, *args, **kwargs):
+    def session_scope(self, *args, remove=False, **kwargs):
         session = self.session(*args, **kwargs)
         try:
             yield session
@@ -21,6 +21,9 @@ class SQLAlchemy(flask_sqlalchemy.SQLAlchemy):
         except Exception:
             with sqlalchemy.util.safe_reraise():
                 session.rollback()
+        finally:
+            if remove:
+                self.session.remove()
 
 
 class Model(flask_sqlalchemy.Model):
@@ -34,7 +37,7 @@ class Model(flask_sqlalchemy.Model):
         else:
             pk_repr = ', '.join(str(value) for value in identity)
 
-        fields_repr = ' ' + ', '.join(f'{key}={value}' for key, value in kwargs.values())
+        fields_repr = ' ' + ', '.join(f'{key}={value}' for key, value in kwargs.items())
 
         return f'<{type(self).__name__} pk={pk_repr}{fields_repr}>'
 

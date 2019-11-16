@@ -13,10 +13,10 @@ class Subscriber(db.Model):
         db.CheckConstraint('hold <= balance', name='hold_lte_balance'),
     )
 
-    id = db.Column(UUID(as_uuid=True), primary_key=True)
+    id = db.Column(UUID(as_uuid=True), server_default=db.text('uuid_generate_v4()'), primary_key=True)
     full_name = db.Column(db.String(255), nullable=False)
-    balance = db.Column(db.Integer, nullable=False)
-    hold = db.Column(db.Integer, nullable=False)
+    balance = db.Column(db.Numeric(precision=64, scale=2), nullable=False)
+    hold = db.Column(db.Numeric(precision=64, scale=2), nullable=False)
     is_closed = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):

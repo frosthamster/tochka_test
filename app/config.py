@@ -15,6 +15,7 @@ class Config:
     SECRET_KEY = os.getenv('APP_SECRET_KEY', 'fa692e9c9fe0a1e22322ef87bb19f26b129d8c9b44b98')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI', get_pg_uri())
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = os.getenv('SQLALCHEMY_ECHO', '0') == '1'
 
 
 class TestConfig(Config):
