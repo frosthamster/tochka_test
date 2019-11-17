@@ -14,6 +14,7 @@ from . import huey
 )
 @app_context()
 def subtract_holds():
+    """Периодический таск, вычитающий hold из баланса абонентов"""
     Subscriber.query.update(
         values={'balance': Subscriber.current_balance, 'hold': 0}, synchronize_session=False
     )

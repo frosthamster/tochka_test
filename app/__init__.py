@@ -12,6 +12,7 @@ from .configs.config import Config
 from .configs.sqla_config import get_db
 from .utils.exceptions import handle_exc
 
+
 db = get_db()
 migrate = Migrate()
 flask_uuid = FlaskUUID()
@@ -36,9 +37,21 @@ def create_app(app_config=Config):
 
 @contextmanager
 def app_context(use_db=True, *args, **kwargs):
+    """
+    Декоратор/контекстный менеджер, поднимающий контекст приложения
+
+    Args:
+        use_db: нужно ли создавать сессию бд в скоупе
+        *args: аргументы для создания сессии
+        **kwargs:
+
+    Returns: созданная сессия
+    """
     app = create_app()
     with ExitStack() as stack:
+        session = None
         stack.enter_context(app.test_request_context())
         if use_db:
-            stack.enter_context(db.session_scope(remove=True, *args, **kwargs))
-        yield
+            session = stack.enter_context(db.session_scope(remove=True, *args, **kwargs))
+
+        yield session

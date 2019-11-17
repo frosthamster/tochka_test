@@ -24,7 +24,6 @@ class TestConfig(Config):
 
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-
 logging.config.dictConfig(
     {
         'version': 1,

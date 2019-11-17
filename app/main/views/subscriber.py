@@ -11,6 +11,15 @@ __all__ = ['AddView', 'StatusView', 'SubstractView']
 
 
 def get_subscriber_and_op_amount(lock=True):
+    """
+    Функция получающая данные из тела запроса при помощи AmountArgsSchema
+
+    Args:
+        lock: нужно ли блокировать строчку с абонентом
+
+    Returns: абонент, сумма операции
+    """
+
     args = AmountArgsSchema().load(request.get_json())
     query = Subscriber.query.filter_by(id=args['id'])
     if lock:
@@ -24,6 +33,8 @@ def get_subscriber_and_op_amount(lock=True):
 
 
 class AddView(base_view.View):
+    """View пополнения счёта абонента"""
+
     def post(self):
         subscriber, amount = get_subscriber_and_op_amount()
         with db.session_scope():
@@ -32,6 +43,8 @@ class AddView(base_view.View):
 
 
 class SubstractView(base_view.View):
+    """View списания средств со счёта абонента"""
+
     def post(self):
         subscriber, amount = get_subscriber_and_op_amount()
         with db.session_scope():
@@ -43,6 +56,8 @@ class SubstractView(base_view.View):
 
 
 class StatusView(base_view.View):
+    """View получающая данные о счёте абонента"""
+
     def get(self, pk):
         subscriber = Subscriber.query.get_or_404(pk, 'subscriber not found')
         return SubscriberSchema().dump(subscriber)

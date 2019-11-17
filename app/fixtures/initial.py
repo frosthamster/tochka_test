@@ -5,6 +5,9 @@ from ..main.models import Subscriber
 
 @fixture
 def run():
+    """
+    Fixture, загружающая начальные данные в базу
+    """
     db.engine.execute(
         Subscriber.__table__.insert(),
         [

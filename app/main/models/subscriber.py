@@ -7,6 +7,16 @@ __all__ = ['Subscriber']
 
 
 class Subscriber(db.Model):
+    """
+    Модель абонента
+
+    Attributes:
+        full_name: ФИО абонента
+        balance: текущий баланс абонента
+        hold: зарезервированные средства на счете, подлежащие списанию
+        is_closed: закрыт ли счёт
+    """
+
     __tablename__ = 'main_subscribers'
     __table_args__ = (
         db.CheckConstraint('balance >= 0', name='balance_gte_0'),

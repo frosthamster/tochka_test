@@ -8,12 +8,23 @@ from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
 
 class NoNameMeta(BindMetaMixin, DeclarativeMeta):
-    pass
+    """Метакласс, аналогичный такому из flask-sqlalchemy, но без автомотической генерации имён таблиц"""
 
 
 class SQLAlchemy(flask_sqlalchemy.SQLAlchemy):
     @contextmanager
     def session_scope(self, *args, remove=False, **kwargs):
+        """
+        Декоратор/контекстный менеджер, предоставляющий обёртку над транзакцией в базе
+        в __exit__ выполняется commit, при ошибке, автоматически выполняется rollback
+
+        Args:
+            *args: аргументы для создания сессии
+            remove: нужно ли уничтожать сессию по окончанию операции
+            **kwargs: аргументы для создания сессии
+
+        Returns: созданная сессия
+        """
         session = self.session(*args, **kwargs)
         try:
             yield session
@@ -26,6 +37,7 @@ class SQLAlchemy(flask_sqlalchemy.SQLAlchemy):
                 self.session.remove()
 
     def truncate_all_tables(self):
+        """Метод, удаляющий данный из всех таблиц в базе, которые относятся к моделям"""
         meta = self.metadata
         for table in reversed(meta.sorted_tables):
             self.session.execute(table.delete())
@@ -36,6 +48,11 @@ class Model(flask_sqlalchemy.Model):
         return self._repr()
 
     def _repr(self, **kwargs):
+        """
+        Хелпер для определения __repr__
+        Args:
+            **kwargs: названия и значения атрибутов, которые необходимо отображать
+        """
         identity = inspect(self).identity
         if identity is None:
             pk_repr = f'(transient {id(self)})'

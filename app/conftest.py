@@ -1,8 +1,8 @@
 import pytest
 
-from app import create_app
-from app.configs.config import TestConfig
-from app.fixtures import install_fixture
+from . import create_app
+from .configs.config import TestConfig
+from .fixtures import install_fixture
 
 
 @pytest.fixture(scope='session')
@@ -13,17 +13,14 @@ def app():
 
 
 @pytest.fixture(scope='session')
-def _db(app, request):
+def _db(app, pytestconfig):
     db = app.extensions['sqlalchemy'].db
-    db.create_all()
 
-    @request.addfinalizer
-    def clear_db():
+    if pytestconfig.getoption('--create-db'):
         with db.session_scope():
-            db.truncate_all_tables()
-
-    with db.session_scope():
-        install_fixture('initial')
+            db.drop_all()
+            db.create_all()
+            install_fixture(pytestconfig.getoption('--fixture-name'))
 
     return db
 

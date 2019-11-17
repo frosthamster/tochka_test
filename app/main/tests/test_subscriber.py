@@ -3,7 +3,7 @@ from uuid import UUID
 import pytest
 from flask import url_for
 
-from app.main.models import Subscriber
+from ..models import Subscriber
 
 
 @pytest.fixture
@@ -45,7 +45,9 @@ def test_fail_status_invalid_pk(client, invalid_pk):
 
 def test_add(client, active_subscriber, db_session):
     old_balance = active_subscriber.balance
-    resp = client.post(url_for('main.subscriber_add'), json={'id': active_subscriber.id, 'amount': '300'})
+    resp = client.post(
+        url_for('main.subscriber_add'), json={'id': active_subscriber.id, 'amount': '300'}
+    )
     assert resp.status_code == 200
     resp = resp.json
 
@@ -56,7 +58,7 @@ def test_add(client, active_subscriber, db_session):
         'addition': {'balance': active_subscriber.balance},
         'description': {},
         'result': True,
-        'status': 200
+        'status': 200,
     }
 
 
@@ -66,7 +68,9 @@ def test_fail_add_invalid_pk(client, invalid_pk):
 
 
 def test_fail_add_on_inactive(client, inactive_subscriber):
-    resp = client.post(url_for('main.subscriber_add'), json={'id': inactive_subscriber.id, 'amount': '300'})
+    resp = client.post(
+        url_for('main.subscriber_add'), json={'id': inactive_subscriber.id, 'amount': '300'}
+    )
     assert resp.status_code == 400
 
 
@@ -77,7 +81,9 @@ def test_fail_add_missing_data(client):
 
 def test_substract(client, active_subscriber, db_session):
     old_hold = active_subscriber.hold
-    resp = client.post(url_for('main.subscriber_substract'), json={'id': active_subscriber.id, 'amount': '100'})
+    resp = client.post(
+        url_for('main.subscriber_substract'), json={'id': active_subscriber.id, 'amount': '100'}
+    )
     assert resp.status_code == 200
     resp = resp.json
 
@@ -88,22 +94,28 @@ def test_substract(client, active_subscriber, db_session):
         'addition': {'hold': active_subscriber.hold},
         'description': {},
         'result': True,
-        'status': 200
+        'status': 200,
     }
 
 
 def test_fail_substract_invalid_pk(client, invalid_pk):
-    resp = client.post(url_for('main.subscriber_substract'), json={'id': invalid_pk, 'amount': '100'})
+    resp = client.post(
+        url_for('main.subscriber_substract'), json={'id': invalid_pk, 'amount': '100'}
+    )
     assert resp.status_code == 404
 
 
 def test_fail_substract_on_inactive(client, inactive_subscriber):
-    resp = client.post(url_for('main.subscriber_substract'), json={'id': inactive_subscriber.id, 'amount': '100'})
+    resp = client.post(
+        url_for('main.subscriber_substract'), json={'id': inactive_subscriber.id, 'amount': '100'}
+    )
     assert resp.status_code == 400
 
 
 def test_fail_substract_too_big(client, active_subscriber):
-    resp = client.post(url_for('main.subscriber_substract'), json={'id': active_subscriber.id, 'amount': '1401'})
+    resp = client.post(
+        url_for('main.subscriber_substract'), json={'id': active_subscriber.id, 'amount': '1401'}
+    )
     assert resp.status_code == 400
 
 

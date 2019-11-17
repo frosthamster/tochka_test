@@ -1,7 +1,7 @@
 from invoke import task
 
 from app import app_context
-from app.fixtures import install_fixture
+import app.fixtures
 
 APP = 'app'
 WSGI_APP = 'app.wsgi'
@@ -25,13 +25,13 @@ def pretty(ctx):
 
 
 @task
-def load_fixture(ctx, fixture_name='initial'):
-    """Load fixture to db"""
+def install_fixture(ctx, fixture_name='initial'):
+    """Install fixture to db"""
     with app_context():
-        install_fixture(fixture_name)
+        app.fixtures.install_fixture(fixture_name)
 
 
-@task(post=[load_fixture])
+@task(post=[install_fixture])
 def docker_up(ctx):
     """Run app in docker"""
     ctx.run(f'flask db upgrade')
