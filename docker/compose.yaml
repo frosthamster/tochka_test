@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  server:
+  app:
     build:
       context: ..
       dockerfile: ./docker/app_dockerfile
@@ -8,28 +8,41 @@ services:
       - ${PORT}:80
     environment:
       REDIS_URL: redis
+      FLASK_APP: app.wsgi
+      DB_PASSWORD: ${DB_PASSWORD}
       APP_SECRET_KEY: ${APP_SECRET_KEY}
     depends_on:
       - redis
-
-  rq-worker:
-    build:
-      context: ..
-      dockerfile: ./docker/server_dockerfile
+      - postgres
     restart: always
-    depends_on:
-      - redis
-    command: python3 ./preload_rq_worker.py redis
 
-  rq-dashboard:
-    build:
-      context: ..
-      dockerfile: ./docker/rq_dashboard_dockerfile
-    ports:
-      - 9181:9181
-    depends_on:
-      - redis
-    command: rq-dashboard --redis-url redis://redis:6379
+  postgres:
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+
+  #  rq-worker:
+#    build:
+#      context: ..
+#      dockerfile: ./docker/server_dockerfile
+#    restart: always
+#    depends_on:
+#      - redis
+#    command: python3 ./preload_rq_worker.py redis
+
+#  rq-dashboard:
+#    build:
+#      context: ..
+#      dockerfile: ./docker/rq_dashboard_dockerfile
+#    ports:
+#      - 9181:9181
+#    depends_on:
+#      - redis
+#    command: rq-dashboard --redis-url redis://redis:6379
 
   redis:
-    image: redis:5
+    image: redis:5.0.6-alpine
+    restart: always

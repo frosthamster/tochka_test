@@ -25,6 +25,11 @@ class SQLAlchemy(flask_sqlalchemy.SQLAlchemy):
             if remove:
                 self.session.remove()
 
+    def truncate_all_tables(self):
+        meta = self.metadata
+        for table in reversed(meta.sorted_tables):
+            self.session.execute(table.delete())
+
 
 class Model(flask_sqlalchemy.Model):
     def __repr__(self):

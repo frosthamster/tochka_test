@@ -1,12 +1,13 @@
 import importlib
 import inspect
+import logging
 from pathlib import Path
 
-
+logger = logging.getLogger(__name__)
 FIXTURES_REGISTRY = {}
 
 
-def run_fixture(name):
+def install_fixture(name):
     try:
         importlib.import_module(f'.{name}', 'app.fixtures')
     except ImportError:
@@ -16,6 +17,7 @@ def run_fixture(name):
     if not fixture:
         raise ValueError(f'not found {name} fixture')
 
+    logger.info(f'installing fixture {name}')
     fixture()
 
 

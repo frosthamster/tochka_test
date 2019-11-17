@@ -2,11 +2,11 @@ import os
 import logging.config
 
 
-def get_pg_uri():
-    user = os.getenv('DB_USER')
-    pwd = os.getenv('DB_PASSWORD')
-    host = os.getenv('DB_HOST')
-    name = os.getenv('DB_NAME', 'postgres')
+def get_pg_uri(prefix=''):
+    pwd = os.getenv(f'{prefix}DB_PASSWORD')
+    user = os.getenv(f'{prefix}DB_USER', 'postgres')
+    host = os.getenv(f'{prefix}DB_HOST', 'postgres')
+    name = os.getenv(f'{prefix}DB_NAME', 'postgres')
 
     return f'postgresql+psycopg2://{user}:{pwd}@{host}/{name}'
 
@@ -20,7 +20,7 @@ class Config:
 
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URI', get_pg_uri('TEST_'))
 
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')

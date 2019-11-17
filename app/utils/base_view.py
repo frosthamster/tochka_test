@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 
 from flask import current_app, jsonify
 from flask.views import MethodView
@@ -8,7 +8,7 @@ def to_dict(obj):
     if obj is None:
         return {}
 
-    if isinstance(obj, collections.Mapping):
+    if isinstance(obj, collections.abc.Mapping):
         return obj
 
     return {'msg': obj}
