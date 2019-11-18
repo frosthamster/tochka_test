@@ -44,6 +44,7 @@ logging.config.dictConfig(
                 'filters': ['exc_filter'],
                 'propagate': False,
             },
+            'sqlalchemy.engine': {'propagate': False},
             'huey.consumer': {'level': 'INFO', 'handlers': ['console'], 'propagate': False},
         },
     }

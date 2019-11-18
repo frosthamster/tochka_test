@@ -19,7 +19,7 @@ class ExceptionsLoggingFilter:
 
 
 def handle_exc(exc):
-    logger.exception(f'caught unhandled exception {exc}')
+    logger.exception('caught unhandled exception %s', exc)
     if isinstance(exc, ValidationError):
         return get_default_resp(None, 400, description=exc.messages)
 

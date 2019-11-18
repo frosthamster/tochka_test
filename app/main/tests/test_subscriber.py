@@ -3,6 +3,7 @@ from uuid import UUID
 import pytest
 from flask import url_for
 
+from app.message_queue.huey_tasks import subtract_holds
 from ..models import Subscriber
 
 
@@ -122,3 +123,12 @@ def test_fail_substract_too_big(client, active_subscriber):
 def test_fail_substract_missing_data(client):
     resp = client.post(url_for('main.subscriber_substract'), json={})
     assert resp.status_code == 400
+
+
+def test_substract_hold(active_subscriber, db_session):
+    old_balance, old_hold = active_subscriber.balance, active_subscriber.hold
+    db_session.expire(active_subscriber)
+    subtract_holds.call_local()
+
+    assert active_subscriber.hold == 0
+    assert active_subscriber.balance == old_balance - old_hold

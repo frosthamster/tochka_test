@@ -26,6 +26,7 @@ def create_app(app_config=Config):
     migrate.init_app(app, db)
     flask_uuid.init_app(app)
 
+    from .fixtures import models
     from .main import bp as main_bp
 
     app.register_blueprint(main_bp, url_prefix='/api/')

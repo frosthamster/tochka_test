@@ -3,6 +3,11 @@ import inspect
 import logging
 from pathlib import Path
 
+from sqlalchemy import exc
+
+from app import db
+from .models import Fixture
+
 logger = logging.getLogger(__name__)
 FIXTURES_REGISTRY = {}
 
@@ -13,10 +18,10 @@ def install_fixture(name):
     По умолчанию загружаются fixture из app.fixtures
 
     Args:
-        name: имя fixture
+        name: имя fixture либо путь для ёё импорта
     """
     try:
-        importlib.import_module(f'.{name}', 'app.fixtures')
+        importlib.import_module(f'app.fixtures.{name}' if '.' not in name else name)
     except ImportError:
         pass
 
@@ -24,8 +29,13 @@ def install_fixture(name):
     if not fixture:
         raise ValueError(f'not found {name} fixture')
 
-    logger.info(f'installing fixture {name}')
-    fixture()
+    logger.info('installing fixture %s', name)
+    try:
+        with db.session_scope():
+            db.session.add(Fixture(name=name))
+            fixture()
+    except exc.IntegrityError:
+        logger.info('fixture %s already installed', name)
 
 
 def fixture(f):
