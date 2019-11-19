@@ -5,7 +5,6 @@ load_dotenv()
 from contextlib import ExitStack, contextmanager
 
 from flask import Flask
-from flask_uuid import FlaskUUID
 from flask_migrate import Migrate
 
 from .configs.config import Config
@@ -15,7 +14,6 @@ from .utils.exceptions import handle_exc
 
 db = get_db()
 migrate = Migrate()
-flask_uuid = FlaskUUID()
 
 
 def create_app(app_config=Config):
@@ -24,12 +22,12 @@ def create_app(app_config=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    flask_uuid.init_app(app)
 
     from .fixtures import models
     from .main import bp as main_bp
 
-    app.register_blueprint(main_bp, url_prefix='/api/')
+    url_prefix = '/api/' if app.config['DEBUG'] else ''
+    app.register_blueprint(main_bp, url_prefix=url_prefix)
 
     app.register_error_handler(Exception, handle_exc)
 

@@ -152,14 +152,6 @@ SQLAlchemy = ">=0.8.0"
 
 [[package]]
 category = "main"
-description = "UUID url converter for Flask routes"
-name = "flask-uuid"
-optional = false
-python-versions = "*"
-version = "0.2"
-
-[[package]]
-category = "main"
 description = "WSGI HTTP Server for UNIX"
 name = "gunicorn"
 optional = false
@@ -591,7 +583,7 @@ version = "0.6.0"
 more-itertools = "*"
 
 [metadata]
-content-hash = "950dccfba53d933bbb0071019d106e1f13eb75cc97fc52f7fef9818011076c96"
+content-hash = "403b3909f3d7bd7255f17d84970bb2c5fc31c8f68251270a4f02235521c7ff0b"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -609,7 +601,6 @@ execnet = ["cacb9df31c9680ec5f95553976c4da484d407e85e41c83cb812aa014f0eddc50", "
 flask = ["13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52", "45eb5a6fd193d6cf7e0cf5d8a5b31f83d5faae0293695626f539a823e93b13f6"]
 flask-migrate = ["6fb038be63d4c60727d5dfa5f581a6189af5b4e2925bc378697b4f0a40cfb4e1", "a96ff1875a49a40bd3e8ac04fce73fdb0870b9211e6168608cbafa4eb839d502"]
 flask-sqlalchemy = ["0078d8663330dc05a74bc72b3b6ddc441b9a744e2f56fe60af1a5bfc81334327", "6974785d913666587949f7c2946f7001e4fa2cb2d19f4e69ead02e4b8f50b33d"]
-flask-uuid = ["f9a8196eb896599ba9e74dcf713cfd1aca4669d418c19069e088620ae6294805"]
 gunicorn = ["0806b5e8a2eb8ba9ac1be65d7b743ec896fc25f5d6cb16c5e051540157b315bb", "ef69dea4814df95e64e3f40b47b7ffedc6911c5009233be9d01cfd0d14aa3f50"]
 huey = ["7ef55966282829a383b9a2bb67aa9c9497d38b13abe80316ea6f266707968659"]
 importlib-metadata = ["aa18d7378b00b40847790e7c27e11673d7fed219354109d0e7b9e5b25dc3ad26", "d5f18a79777f3aa179c145737780282e27b508fc8fd688cb17c7a813e8bd39af"]

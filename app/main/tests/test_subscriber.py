@@ -29,8 +29,9 @@ def test_status(client, active_subscriber):
 
     assert resp == {
         'addition': {
-            'balance': active_subscriber.balance,
-            'hold': active_subscriber.hold,
+            'full_name': 'Петров Иван Сергеевич',
+            'balance': str(active_subscriber.balance),
+            'hold': str(active_subscriber.hold),
             'is_closed': active_subscriber.is_closed,
         },
         'description': {},

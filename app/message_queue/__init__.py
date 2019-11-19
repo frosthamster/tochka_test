@@ -9,7 +9,7 @@ huey = RedisHuey(
     immediate=os.getenv('HUEY_IMMEDIATE', '0') == '1',
     connection_pool=redis.ConnectionPool(
         max_connections=50,
-        host=os.environ.get('REDIS_HOST', '127.0.0.1'),
+        host=os.environ.get('REDIS_HOST', 'redis'),
         port=int(os.environ.get('REDIS_PORT', 6379)),
     ),
 )

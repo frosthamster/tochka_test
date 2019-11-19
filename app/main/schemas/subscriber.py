@@ -12,6 +12,9 @@ class AmountArgsSchema(base_schema.Schema):
 
 
 class SubscriberSchema(base_schema.ModelSchema):
+    balance = fields.Decimal(as_string=True)
+    hold = fields.Decimal(as_string=True)
+
     class Meta:
         model = Subscriber
-        fields = ('balance', 'hold', 'is_closed')
+        fields = ('full_name', 'balance', 'hold', 'is_closed')

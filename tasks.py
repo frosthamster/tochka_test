@@ -11,6 +11,12 @@ BLACK_BASE_CMD = 'black --py36 --skip-string-normalization --skip-numeric-unders
 
 
 @task
+def run(ctx):
+    """Run app in on debug server"""
+    ctx.run('flask run --host=0.0.0.0 --port=8080 --no-reload')
+
+
+@task
 def lint(ctx):
     """Run linters"""
     ctx.run(f'pylint --jobs 4 --rcfile=setup.cfg {APP}')
@@ -20,7 +26,7 @@ def lint(ctx):
 @task
 def pretty(ctx):
     """Run code formatters"""
-    ctx.run(f"unify {APP} --in-place --recursive --quote='")
+    ctx.run(f"unify {APP} --in-place --recursive")
     ctx.run(f'{BLACK_BASE_CMD} {APP}')
 
 
@@ -31,15 +37,13 @@ def install_fixture(ctx, fixture_name='initial'):
         app.fixtures.install_fixture(fixture_name)
 
 
-@task(post=[install_fixture])
+@task
+def db_upgrade(ctx):
+    """Run app migrations"""
+    ctx.run('flask db upgrade')
+
+
+@task(pre=[db_upgrade, install_fixture])
 def docker_up(ctx):
     """Run app in docker"""
-    ctx.run(f'flask db upgrade')
-    ctx.run(f'gunicorn --workers=4 --threads=4 -b :80 {WSGI_APP}:app')
-
-
-@task
-def docker_deploy(ctx, build=True):
-    """Deploy app in docker"""
-    build = '--build' if build else ''
-    ctx.run(f'docker-compose -f ./docker/compose.yaml --no-ansi up {build}')
+    ctx.run(f'gunicorn --workers=4 --threads=4 --bind :80 {WSGI_APP}:app')

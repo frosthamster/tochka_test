@@ -36,6 +36,8 @@ def install_fixture(name):
             fixture()
     except exc.IntegrityError:
         logger.info('fixture %s already installed', name)
+    else:
+        logger.info('fixture %s installed', name)
 
 
 def fixture(f):

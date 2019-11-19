@@ -1,48 +1,90 @@
-version: '3.3'
+version: '3.4'
+
+volumes:
+  tochka_test_pg_data:
+  tochka_test_redis_data:
+
+networks:
+  tochka_test_back_net:
+  tochka_test_front_net:
+
+x-app-core: &app-core
+  build:
+    context: ..
+    dockerfile: ./docker/app_dockerfile
+  depends_on:
+    - redis
+    - postgres
+
+x-app-env: &app-env
+  FLASK_APP: app.wsgi
+  DB_PASSWORD: ${DB_PASSWORD}
+  APP_SECRET_KEY: ${APP_SECRET_KEY}
+
+x-all-net: &all-net
+  networks:
+    - tochka_test_back_net
+    - tochka_test_front_net
+
+x-back-net: &back-net
+  networks:
+    - tochka_test_back_net
+
+x-restart-policy: &restart-policy
+  restart: on-failure:3
+
 services:
-  app:
-    build:
-      context: ..
-      dockerfile: ./docker/app_dockerfile
+  nginx:
+    <<: *restart-policy
+    <<: *all-net
+    container_name: tochka_test_nginx
+    image: nginx:1.17.5-alpine
     ports:
       - ${PORT}:80
-    environment:
-      REDIS_URL: redis
-      FLASK_APP: app.wsgi
-      DB_PASSWORD: ${DB_PASSWORD}
-      APP_SECRET_KEY: ${APP_SECRET_KEY}
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - redis
-      - postgres
+      - app
+
+  app:
+    <<: *app-core
+    <<: *restart-policy
+    <<: *back-net
+    container_name: tochka_test_app
+    expose:
+      - 80
+    environment:
+      <<: *app-env
+
+  redis:
+    <<: *restart-policy
+    <<: *back-net
+    container_name: tochka_test_redis
+    image: redis:5.0.6-alpine
     restart: always
+    volumes:
+      - tochka_test_redis_data:/data
 
   postgres:
+    <<: *restart-policy
+    <<: *back-net
+    container_name: tochka_test_postgres
     image: postgres:12.0-alpine
     restart: always
+    volumes:
+      - tochka_test_pg_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-
-  #  rq-worker:
-#    build:
-#      context: ..
-#      dockerfile: ./docker/server_dockerfile
-#    restart: always
-#    depends_on:
-#      - redis
-#    command: python3 ./preload_rq_worker.py redis
-
-#  rq-dashboard:
-#    build:
-#      context: ..
-#      dockerfile: ./docker/rq_dashboard_dockerfile
-#    ports:
-#      - 9181:9181
-#    depends_on:
-#      - redis
-#    command: rq-dashboard --redis-url redis://redis:6379
-
-  redis:
-    image: redis:5.0.6-alpine
+  huey_worker:
+    <<: *app-core
+    <<: *restart-policy
+    <<: *back-net
+    container_name: tochka_test_huey_worker
     restart: always
+    environment:
+      <<: *app-env
+      HUEY_WORKERS: 1
+      SUBSTRACT_HOLD_PERIOD: 10
+    command: python3 -m app.message_queue
