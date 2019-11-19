@@ -42,7 +42,7 @@ def app_context(use_db=True, *args, **kwargs):
     Args:
         use_db: нужно ли создавать сессию бд в скоупе
         *args: аргументы для создания сессии
-        **kwargs:
+        **kwargs: аргументы для создания сессии
 
     Returns: созданная сессия
     """
