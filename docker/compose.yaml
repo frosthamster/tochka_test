@@ -55,6 +55,7 @@ services:
       - 80
     environment:
       <<: *app-env
+    command: ['wait-for-it', '-s', 'postgres:5432', '--', 'invoke', 'docker-up']
 
   redis:
     <<: *restart-policy
@@ -87,4 +88,4 @@ services:
       <<: *app-env
       HUEY_WORKERS: 1
       SUBSTRACT_HOLD_PERIOD: 10
-    command: python3 -m app.message_queue
+    command: ['wait-for-it', '-s', 'postgres:5432', '--', 'python3', '-m', 'app.message_queue']

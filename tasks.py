@@ -12,7 +12,7 @@ BLACK_BASE_CMD = 'black --py36 --skip-string-normalization --skip-numeric-unders
 
 @task
 def run(ctx):
-    """Run app in on debug server"""
+    """Run app on debug server"""
     ctx.run('flask run --host=0.0.0.0 --port=8080 --no-reload')
 
 
